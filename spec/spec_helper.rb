@@ -19,6 +19,7 @@ RSpec.configure do |c|
           varchar     :access_token
           integer     :login_count, default: 0
           integer     :failed_login_count, default: 0
+          datetime    :last_login_at
         end
       end
     end.apply(Sequel::Model.db, :up)

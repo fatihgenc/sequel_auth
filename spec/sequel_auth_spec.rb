@@ -56,7 +56,7 @@ describe "using Sequel::Plugins::SequelAuth" do
     end
   end
   
-  describe "login count columns" do
+  describe "login columns" do
     context "Login count column defined" do
       subject(:user) { 
         User.plugin :sequel_auth,login_count_column: :login_count
@@ -75,6 +75,15 @@ describe "using Sequel::Plugins::SequelAuth" do
         current_failed_login_count = user.values[User.failed_login_count_column]
         user.authenticate("non_valid_password")      
         expect(user.values[User.failed_login_count_column]).to eq(current_failed_login_count+1) 
+      end
+    end
+    context "Last login at count column defined" do
+      subject(:user) { 
+        User.plugin :sequel_auth,last_login_at_column: :last_login_at
+        User.create(password: "test",password_confirmation: "test") }
+      it "should increment login count after successful login" do
+        user.authenticate("test")      
+        expect(user.values[User.last_login_at_column].to_f).to be_within(0.5).of Time.now.to_f
       end
     end
   end

@@ -23,6 +23,7 @@ module Sequel
           @access_token_column        = opts.fetch(:access_token_column, nil)
           @login_count_column         = opts.fetch(:login_count_column, nil)
           @failed_login_count_column  = opts.fetch(:failed_login_count_column, nil)
+          @last_login_at_column       = opts.fetch(:last_login_at_column,nil)
         end
       end
       
@@ -32,6 +33,7 @@ module Sequel
             :access_token_column, 
             :login_count_column,
             :failed_login_count_column,
+            :last_login_at_column,
             :include_validations
         
         # NOTE: nil as a value means that the value of the instance variable
@@ -52,9 +54,10 @@ module Sequel
         
         def authenticate(unencrypted)
           if model.provider.matches?(self.send(model.digest_column),unencrypted)
-            if model.login_count_column
+            if model.login_count_column || model.last_login_at_column
               #Update login count
-              self.send("#{model.login_count_column}=",self.send(model.login_count_column)+1 )
+              self.send("#{model.login_count_column}=",self.send(model.login_count_column)+1 ) if model.login_count_column
+              self.send("#{model.last_login_at_column}=",Time.now ) if model.last_login_at_column
               self.save
             end
             self
