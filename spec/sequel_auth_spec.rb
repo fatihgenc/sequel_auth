@@ -107,6 +107,17 @@ describe "using Sequel::Plugins::SequelAuth" do
         expect(user.class.provider.cost).to eq(BCrypt::Engine.cost)
       end
     end
+    context "saved user" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :bcrypt;
+        User.create(password: "test",password_confirmation: "test") }
+      it "should authenticate with valid credentials" do
+        expect(user.authenticate("test")).to eq(user)
+      end
+      it "should not authenticate with invalid credentials" do
+        expect(user.authenticate("non_valid_password")).to eq(nil)
+      end
+    end
   end
   
   describe "Using scrypt provider" do
@@ -131,6 +142,18 @@ describe "using Sequel::Plugins::SequelAuth" do
         expect(user.class.provider.max_memfrac).to eq(SequelAuth::Providers::Scrypt.defaults[:max_memfrac])
       end
     end
+    
+    context "saved user" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :scrypt;
+        User.create(password: "test",password_confirmation: "test") }
+      it "should authenticate with valid credentials" do
+        expect(user.authenticate("test")).to eq(user)
+      end
+      it "should not authenticate with invalid credentials" do
+        expect(user.authenticate("non_valid_password")).to eq(nil)
+      end
+    end
   end
   
   describe "Using crypt provider" do
@@ -145,10 +168,21 @@ describe "using Sequel::Plugins::SequelAuth" do
         expect(user.class.provider.salt_size).to eq(SequelAuth::Providers::Crypt.defaults[:salt_size])
       end
     end
+    context "saved user" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :crypt;
+        User.create(password: "test",password_confirmation: "test") }
+      it "should authenticate with valid credentials" , :focus => true do
+        expect(user.authenticate("test")).to eq(user)
+      end
+      it "should not authenticate with invalid credentials", :focus => true do
+        expect(user.authenticate("non_valid_password")).to eq(nil)
+      end
+    end
     context "With incorrect prefix" do
       subject(:user) {
         User.plugin :sequel_auth, provider: :crypt, provider_opts: {salt_prefix: "***"}
-        User.new(password: "test",password_confirmation: "test")}
+      User.new(password: "test",password_confirmation: "test")}
       it "should raise Argument Error" do
         expect {user.save}.to raise_error Errno::EINVAL
       end
