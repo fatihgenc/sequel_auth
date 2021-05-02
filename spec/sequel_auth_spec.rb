@@ -29,6 +29,24 @@ describe "using Sequel::Plugins::SequelAuth" do
     end
   end 
   
+  describe "Access token column" do
+    context "Access token column defined" do
+      subject(:user) { 
+        User.plugin :sequel_auth,access_token_column: :access_token
+        User.create(password: "test",password_confirmation: "test") }
+      it "should respond to reset_access_token" do
+        expect(user.respond_to?(:reset_access_token)).to eq(true)
+      end
+      it "should not raise error" do
+        expect{user.reset_access_token}.not_to raise_error
+      end
+      it "should give 16 char string" do
+        user.reset_access_token
+        expect(user.values[User.access_token_column].length).to eq(22) 
+      end
+    end
+  end
+  
   describe "Using bcrypt provider" do
     context "Min cost" do
       subject(:user) {
@@ -78,13 +96,20 @@ describe "using Sequel::Plugins::SequelAuth" do
     context "Default options" do
       subject(:user) {
         User.plugin :sequel_auth, provider: :crypt;
-        User.new(password: "test",password_confirmation: "test")
-      }
+        User.new(password: "test",password_confirmation: "test")}
       it "should be equal to default salt_prefix" do
         expect(user.class.provider.salt_prefix).to eq(SequelAuth::Providers::Crypt.defaults[:salt_prefix])
       end
       it "should be equal to default salt_size" do
         expect(user.class.provider.salt_size).to eq(SequelAuth::Providers::Crypt.defaults[:salt_size])
+      end
+    end
+    context "With incorrect prefix" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :crypt, provider_opts: {salt_prefix: "***"}
+        User.new(password: "test",password_confirmation: "test")}
+      it "should raise Argument Error" do
+        expect {user.save}.to raise_error Errno::EINVAL
       end
     end
   end

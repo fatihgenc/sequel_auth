@@ -16,6 +16,7 @@ RSpec.configure do |c|
         create_table(:users) do
           primary_key :id
           varchar     :password_digest
+          varchar     :access_token
         end
       end
     end.apply(Sequel::Model.db, :up)

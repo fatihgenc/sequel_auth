@@ -1,4 +1,5 @@
 require "sequel"
+require "securerandom"
 require_relative "providers/bcrypt"
 require_relative "providers/scrypt"
 require_relative "providers/crypt"
@@ -18,11 +19,16 @@ module Sequel
           @include_validations = opts.fetch(:include_validations, true)
           @provider  = SequelAuth.provider opts.fetch(:provider, :bcrypt),
               opts.fetch(:provider_opts, {})
+          #Optional columns
+          @access_token_column = opts.fetch(:access_token_column, nil)
         end
       end
       
       module ClassMethods
-        attr_reader :provider, :digest_column, :include_validations
+        attr_reader :provider, 
+            :digest_column, 
+            :access_token_column, 
+            :include_validations
         
         # NOTE: nil as a value means that the value of the instance variable
         # will be assigned as is in the subclass.
@@ -43,6 +49,15 @@ module Sequel
         def authenticate(unencrypted)
           if model.provider.matches?(self.send(model.digest_column),unencrypted)
             self
+          end
+        end
+        
+        def requested(r)
+        end
+        
+        def reset_access_token
+          if model.access_token_column
+            self.update(model.access_token_column=>SecureRandom.urlsafe_base64(16))
           end
         end
         
