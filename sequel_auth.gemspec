@@ -12,7 +12,7 @@ Select one of crypt, bcrypt, scrypt
 EOF
   s.authors     = ["Fatih GENÇ"]
   s.files       = Dir['lib/**/*.rb']
-  s.homepage    = 'https://gitlab.com/fatihgenc/sequel_auth'
+  s.homepage    = 'https://gitlab.com/ikilifikir/sequel_auth'
   s.license     = 'MIT' 
   s.description = "Plugin to add authentication methods to Sequel Model" 
   s.email       = 'fatihgnc@gmail.com'
