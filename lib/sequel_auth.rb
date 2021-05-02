@@ -80,7 +80,7 @@ module Sequel
           super
           
           if model.include_validations
-            errors.add :password, 'is not present'              if password.nil?
+            errors.add :password, 'is not present'              if password.nil? && new?
             errors.add :password, 'doesn\'t match confirmation' if password != password_confirmation
           end
         end
