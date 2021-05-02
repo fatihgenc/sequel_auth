@@ -74,5 +74,20 @@ describe "using Sequel::Plugins::SequelAuth" do
     end
   end
   
+  describe "Using crypt provider" do
+    context "Default options" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :crypt;
+        User.new(password: "test",password_confirmation: "test")
+      }
+      it "should be equal to default salt_prefix" do
+        expect(user.class.provider.salt_prefix).to eq(SequelAuth::Providers::Crypt.defaults[:salt_prefix])
+      end
+      it "should be equal to default salt_size" do
+        expect(user.class.provider.salt_size).to eq(SequelAuth::Providers::Crypt.defaults[:salt_size])
+      end
+    end
+  end
+  
   
 end

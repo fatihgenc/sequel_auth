@@ -17,7 +17,7 @@ EOF
   s.description = "Plugin to add authentication methods to Sequel Model" 
   s.email       = 'fatihgnc@gmail.com'
   
-  s.add_dependency 'sequel',      '~> 4.1','>= 4.1.0'
+  s.add_dependency 'sequel',      '~> 5.0','>= 5.0.0'
   s.add_dependency 'bcrypt',      '~> 3.1'
   s.add_dependency 'scrypt',      '~> 3.0'
   

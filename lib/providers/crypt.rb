@@ -30,7 +30,6 @@ module SequelAuth
           password.crypt(hash) == hash
         end   
         
-        private
         def defaults
           {
             salt_prefix: "$6$",

@@ -17,27 +17,6 @@ RSpec.configure do |c|
           primary_key :id
           varchar     :password_digest
         end
-        #%i[different_digest_users,bcrypt_users,scrypt_users,crypt_users].do |t|
-        #  create_table(t) do
-        #    primary_key :id
-        #    varchar     :password_hash
-        #  end
-        #end
-        #
-        #create_table(:bcrypt_users) do
-        #  primary_key :id
-        #  varchar     :password_digest
-        #end
-        #
-        #create_table(:scrypt_users) do
-        #  primary_key :id
-        #  varchar     :password_digest
-        #end
-        #
-        #create_table(:crypt_users) do
-        #  primary_key :id
-        #  varchar     :password_digest
-        #end
       end
     end.apply(Sequel::Model.db, :up)
     
