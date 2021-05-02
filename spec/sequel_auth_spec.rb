@@ -27,6 +27,15 @@ describe "using Sequel::Plugins::SequelAuth" do
         expect {user.password = "test";user.save}.to raise_error Sequel::ValidationFailed
       end
     end
+    context "saved user" do
+      subject(:user) { User.create(password: "test",password_confirmation: "test") }
+      it "should authenticate with valid credentials" do
+        expect(user.authenticate("test")).to eq(user)
+      end
+      it "should not authenticate with valid credentials" do
+        expect(user.authenticate("non_valid_password")).to eq(nil)
+      end
+    end
   end 
   
   describe "Access token column" do
@@ -43,6 +52,29 @@ describe "using Sequel::Plugins::SequelAuth" do
       it "should give 16 char string" do
         user.reset_access_token
         expect(user.values[User.access_token_column].length).to eq(22) 
+      end
+    end
+  end
+  
+  describe "login count columns" do
+    context "Login count column defined" do
+      subject(:user) { 
+        User.plugin :sequel_auth,login_count_column: :login_count
+        User.create(password: "test",password_confirmation: "test") }
+      it "should increment login count after successful login" do
+        current_login_count = user.values[User.login_count_column]
+        user.authenticate("test")      
+        expect(user.values[User.login_count_column]).to eq(current_login_count+1) 
+      end
+    end
+    context "Failed login count column defined" do
+      subject(:user) { 
+        User.plugin :sequel_auth,failed_login_count_column: :failed_login_count
+        User.create(password: "test",password_confirmation: "test") }
+      it "should increment login count after successful login" do
+        current_failed_login_count = user.values[User.failed_login_count_column]
+        user.authenticate("non_valid_password")      
+        expect(user.values[User.failed_login_count_column]).to eq(current_failed_login_count+1) 
       end
     end
   end

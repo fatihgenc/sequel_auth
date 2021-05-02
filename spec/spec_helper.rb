@@ -17,6 +17,8 @@ RSpec.configure do |c|
           primary_key :id
           varchar     :password_digest
           varchar     :access_token
+          integer     :login_count, default: 0
+          integer     :failed_login_count, default: 0
         end
       end
     end.apply(Sequel::Model.db, :up)

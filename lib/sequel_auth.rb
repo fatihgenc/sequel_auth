@@ -20,7 +20,9 @@ module Sequel
           @provider  = SequelAuth.provider opts.fetch(:provider, :bcrypt),
               opts.fetch(:provider_opts, {})
           #Optional columns
-          @access_token_column = opts.fetch(:access_token_column, nil)
+          @access_token_column        = opts.fetch(:access_token_column, nil)
+          @login_count_column         = opts.fetch(:login_count_column, nil)
+          @failed_login_count_column  = opts.fetch(:failed_login_count_column, nil)
         end
       end
       
@@ -28,6 +30,8 @@ module Sequel
         attr_reader :provider, 
             :digest_column, 
             :access_token_column, 
+            :login_count_column,
+            :failed_login_count_column,
             :include_validations
         
         # NOTE: nil as a value means that the value of the instance variable
@@ -48,11 +52,19 @@ module Sequel
         
         def authenticate(unencrypted)
           if model.provider.matches?(self.send(model.digest_column),unencrypted)
+            if model.login_count_column
+              #Update login count
+              self.send("#{model.login_count_column}=",self.send(model.login_count_column)+1 )
+              self.save
+            end
             self
+          else
+            if model.failed_login_count_column
+              #Update failed login count
+              self.send("#{model.failed_login_count_column}=",self.send(model.failed_login_count_column)+1 )
+              self.save            
+            end
           end
-        end
-        
-        def requested(r)
         end
         
         def reset_access_token
