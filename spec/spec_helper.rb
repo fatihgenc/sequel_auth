@@ -51,6 +51,6 @@ SimpleCov.at_exit do
   when 80..90 then :green
   else :brightgreen
   end
-  File.write("coverage/coverage.svg", Net::HTTP.get(URI.parse("https://img.shields.io/badge/coverage-#{op.round(2)}-#{color}.svg")))
+  File.write("coverage.svg", Net::HTTP.get(URI.parse("https://img.shields.io/badge/coverage-#{op.round(2)}-#{color}.svg")))
 end
 require_relative '../lib/sequel_auth'
