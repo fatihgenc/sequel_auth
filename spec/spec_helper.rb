@@ -52,5 +52,6 @@ SimpleCov.at_exit do
   else :brightgreen
   end
   File.write("coverage.svg", Net::HTTP.get(URI.parse("https://img.shields.io/badge/coverage-#{op.round(2)}-#{color}.svg")))
+  SimpleCov.result.format!
 end
 require_relative '../lib/sequel_auth'
