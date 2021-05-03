@@ -22,5 +22,6 @@ EOF
   s.add_dependency 'scrypt',      '~> 3.0'
   
   s.add_development_dependency 'rspec',          '~> 3.0'
+  s.add_development_dependency 'simplecov',      '~> 0.21'
   s.add_development_dependency 'sqlite3',        '~> 1.4'
 end
