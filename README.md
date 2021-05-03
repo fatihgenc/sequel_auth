@@ -1,7 +1,6 @@
 # Sequel_auth
 
-[![Gem Version](https://badge.fury.io/rb/sequel_auth.svg)](https://badge.fury.io/rb/sequel_auth)
-[![Coverage](coverage/coverage.svg)]
+[![Gem Version](https://badge.fury.io/rb/sequel_auth.svg)](https://badge.fury.io/rb/sequel_auth) [![Coverage](/coverage.svg)]()
 
 Plugin adds model level authentication with BCrypt, Scrypt, Crypt algotihms for Sequel models.
 
