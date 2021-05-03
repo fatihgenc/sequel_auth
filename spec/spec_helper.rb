@@ -45,10 +45,10 @@ SimpleCov.at_exit do
   op = SimpleCov.result.coverage_statistics[:line].percent
   color = case op
   when 0..20 then :red
-  when 20..40 then :orange
-  when 40..60 then :yellow
-  when 60..80 then :yellowgreen
-  when 80..90 then :green
+  when 21..40 then :orange
+  when 41..60 then :yellow
+  when 61..80 then :yellowgreen
+  when 81..90 then :green
   else :brightgreen
   end
   File.write("coverage.svg", Net::HTTP.get(URI.parse("https://img.shields.io/badge/coverage-#{op.round(2)}-#{color}.svg")))
