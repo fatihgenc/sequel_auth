@@ -11,6 +11,7 @@ integration:
 
   image: ruby:3.0.1-alpine3.13
   script:
+    - apk add --no-cache autoconf automake gcc g++ libtool make libgcc libstdc++
     - bundle install
     # save return code
     - bundle exec rspec || echo $? > error_code.txt
