@@ -1,0 +1,53 @@
+stages:
+  - test
+  - quality
+
+integration:
+  stage: test
+  allow_failure: true
+  artifacts:
+    when: always
+    paths: [coverage]
+
+  image: ruby:3.0.1-alpine3.13
+  script:
+    - bundle install
+    # save return code
+    - bundle exec rspec || echo $? > error_code.txt
+    - rake sonar:convert
+    # if there was en error exit with that code
+    - if [ -f error_code.txt ]; then retcode=`cat error_code.txt`; exit $retcode ; fi
+  rules:
+    - if: $CI_COMMIT_BRANCH == "test"
+  tags:
+    - docker
+    - fast_runner
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+code_quality:
+  stage: quality
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+#    paths: [gl-code-quality-report.json]
+    paths: [gl-code-quality-report.html]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "test"
+  tags:
+    - shell
+
+sonar:
+  stage: quality
+  script:
+    - echo "CI_PROJECT_NAME=$CI_PROJECT_NAME SONAR_URL=$SONAR_URL"
+    # change path for the generated report so that sonarqube can analyze them
+    - pwd_dir=`pwd`
+    - sed -i "s~/builds/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}~$pwd_dir~g" coverage/.resultset.sonarqube.json
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.projectBaseDir=./ -Dsonar.ruby.coverage.reportPaths=./coverage/.resultset.sonarqube.json -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "test"
+  tags:
+    - shell
