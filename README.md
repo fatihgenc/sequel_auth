@@ -69,7 +69,7 @@ access_token_column option adds a method for resetting the colum. This method ge
     user.reset_access_token
     user.access_token # => "knOSWH5l5JI87p1AVEq6Xg"
 ### include_validations option
-include_validations option can be used to disable default password presence and confirmation. 
+include_validations option can be used to disable default password presence and confirmation validation. 
 > Please note that, precence check only works for new records.
 
     class UserWithoutValidations < Sequel::Model
