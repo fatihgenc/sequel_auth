@@ -6,6 +6,8 @@ Plugin adds model level authentication with BCrypt, Scrypt, Crypt algotihms for 
 
 This plugin inspired from [sequel_secure_password](https://github.com/mlen/sequel_secure_password) and [authlogic](https://github.com/binarylogic/authlogic) (rails) plugins.
 
+If you're looking for a full stack authentication framework then check [rodauth](https://github.com/jeremyevans/rodauth)
+
 ## Installation
 
 Add this line to your application's Gemfile:
