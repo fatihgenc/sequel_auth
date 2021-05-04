@@ -1,8 +1,8 @@
 require "sequel"
 require "securerandom"
-require_relative "providers/bcrypt"
-require_relative "providers/scrypt"
-require_relative "providers/crypt"
+require_relative "sequel_auth/providers/bcrypt"
+require_relative "sequel_auth/providers/scrypt"
+require_relative "sequel_auth/providers/crypt"
 
 module Sequel
   module Plugins
