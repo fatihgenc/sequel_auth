@@ -49,6 +49,6 @@ sonar:
     - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.projectBaseDir=./ -Dsonar.ruby.coverage.reportPaths=./coverage/.resultset.sonarqube.json -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN
   allow_failure: true
   rules:
-    - if: $CI_COMMIT_BRANCH == "test"
+    - if: $CI_COMMIT_BRANCH == "test" || $CI_COMMIT_BRANCH == "develop"
   tags:
     - shell
