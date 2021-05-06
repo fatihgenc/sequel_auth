@@ -60,7 +60,7 @@ Plugin should be used in subclasses of `Sequel::Model`.
 
 *Crypt*
 * salt_size: 16
-* salt_prefix: "$6$"
+* method: on of (:sha512, :md5,:nthash,:sha256,:sha512,:sha1)
 
 ### Access Token Column
 access_token_column option adds a method for resetting the colum. This method generates 22 character length url safe string

@@ -161,8 +161,8 @@ describe "using Sequel::Plugins::SequelAuth" do
       subject(:user) {
         User.plugin :sequel_auth, provider: :crypt;
         User.new(password: "test",password_confirmation: "test")}
-      it "should be equal to default salt_prefix" do
-        expect(user.class.provider.salt_prefix).to eq(SequelAuth::Providers::Crypt.defaults[:salt_prefix])
+      it "should be equal to default method" do
+        expect(user.class.provider.method).to eq(SequelAuth::Providers::Crypt.defaults[:method])
       end
       it "should be equal to default salt_size" do
         expect(user.class.provider.salt_size).to eq(SequelAuth::Providers::Crypt.defaults[:salt_size])
@@ -172,21 +172,56 @@ describe "using Sequel::Plugins::SequelAuth" do
       subject(:user) {
         User.plugin :sequel_auth, provider: :crypt;
         User.create(password: "test",password_confirmation: "test") }
-      it "should authenticate with valid credentials" , :focus => true do
+      it "should authenticate with valid credentials" do
         expect(user.authenticate("test")).to eq(user)
       end
-      it "should not authenticate with invalid credentials", :focus => true do
+      it "should not authenticate with invalid credentials" do
         expect(user.authenticate("non_valid_password")).to eq(nil)
       end
     end
-    context "With incorrect prefix" do
+    
+    context "With given salt" do
+      let(:given_salt) {"$6$3zyGdboZ3mwrz"}
+      let(:expected_hash){"$6$3zyGdboZ3mwrz$qHpGvnvesgVDjpGnhlDPWYgwKiONTYE0ApEuyzU0CHZEZ6FxDiKjTNtOrmNGfRuYvcagDi24Xvjvz2VefKQ87."}
       subject(:user) {
-        User.plugin :sequel_auth, provider: :crypt, provider_opts: {salt_prefix: "***"}
-      User.new(password: "test",password_confirmation: "test")}
-      it "should raise Argument Error" do
-        expect {user.save}.to raise_error Errno::EINVAL
+        User.plugin :sequel_auth, provider: :crypt, provider_opts: {salt: given_salt}
+        User.create(password: "test",password_confirmation: "test")}
+      it "should be equal" do
+        expect(user.password_digest).to eq(expected_hash)
       end
     end
+    
+    
+    context "With SHA256 method" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :crypt, provider_opts: {method: :sha256,salt: nil}
+        User.new(password: "test",password_confirmation: "test")}
+      it "should be same with given method focuss" do
+        expect(user.class.provider.method).to eq(:sha256)
+      end
+      it "should not raise Argument Error" do
+        expect {user.save}.not_to raise_error
+      end
+    end
+    
+    context "With SHA512 method" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :crypt, provider_opts: {method: :sha512,salt: nil}
+        User.new(password: "test",password_confirmation: "test")}
+      it "should not raise Argument Error" do
+        expect {user.save}.not_to raise_error
+      end
+    end
+    
+    context "With incorrect method" do
+      subject(:user) {
+        User.plugin :sequel_auth, provider: :crypt, provider_opts: {method: :invalid_method,salt: nil}
+        User.new(password: "test",password_confirmation: "test")}
+      it "should raise Argument Error" do
+        expect {user.save}.to raise_error KeyError
+      end
+    end
+    
   end
   
   
