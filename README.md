@@ -6,6 +6,8 @@ Plugin adds model level authentication with BCrypt, Scrypt, Crypt algotihms for 
 
 This plugin inspired from [sequel_secure_password](https://github.com/mlen/sequel_secure_password) and [authlogic](https://github.com/binarylogic/authlogic) (rails) plugins.
 
+If you're looking for a full stack authentication framework then check [rodauth](https://github.com/jeremyevans/rodauth)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -25,51 +27,66 @@ Or install it yourself as:
 Plugin should be used in subclasses of `Sequel::Model`.
 
 
-Example:
+### Basic Exapmle
 
     class User < Sequel::Model
       plugin :sequel_auth
     end
+
+### Specific Provider
 
     # Bcrypt is the default provider and you can chose bcrypt, scrypt or string crypt 
     class ScryptUser < Sequel::Model
       plugin :sequel_auth, provider: :scrypt
     end
     
-    # Provider options 
-    # bcrypt options => cost: 8
-    # scrypt options =>  key_len: 32,
-    #        salt_size: 8,
-    #        max_time: 0.2,
-    #        max_mem: 1024 * 1024,
-    #        max_memfrac: 0.5
-    # crypt options =>  salt_size: 16, salt_prefix: "$6$"
+### Specific Provider with options
+    
     class ScryptUser < Sequel::Model
       plugin :sequel_auth, provider: :scrypt, provider_opts: {salt_size: 9}
-    end  
-    
-    # access_token_column option adds a method for resetting the colum
-    # This method generates 22 character length url safe string
+    end
+
+#### Default Opitions
+
+*Bcrypt*
+* cost : 8
+
+*Scrypt*
+* key_len: 32
+* salt_size: 8
+* max_time: 0.2
+* max_mem: 1024 * 1024
+* max_memfrac: 0.5
+
+*Crypt*
+* salt_size: 16
+* method: on of (:sha512, :md5,:nthash,:sha256,:sha512,:sha1)
+
+### Access Token Column
+access_token_column option adds a method for resetting the colum. This method generates 22 character length url safe string
+ 
     class UserWithAccessToken
         plugin :sequel_auth,access_token_column: :access_token
     end
     user.reset_access_token
     user.access_token # => "knOSWH5l5JI87p1AVEq6Xg"
+### include_validations option
+include_validations option can be used to disable default password presence and confirmation validation. 
+> Please note that, precence check only works for new records.
 
-    # include_validations option can be used to disable default password
-    # presence and confirmation
-    # precence check only new records
     class UserWithoutValidations < Sequel::Model
       plugin :sequel_auth, include_validations: false
     end
+### digest_validations option
+digest_column option can be used to use an alternate database column. the default column is "password_digest"
 
-    # digest_column option can be used to use an alternate database column.
-    # the default column is "password_digest"
-    class UserWithAlternateDigestColumn < Sequel::Model
+    class UserWithSpecificDigestColumn < Sequel::Model
       plugin :sequel_auth, digest_column: :crypted_password
     end
     
-    # Implemented columns (integer)login_count, (integer)failed_login_count, (datetime)last_login_at
+### Login columns    
+Implemented columns (integer)login_count, (integer)failed_login_count, (datetime)last_login_at
+
     class UserWithLoginColumns
         plugin :sequel_auth, 
             login_count_column: :login_count, 
