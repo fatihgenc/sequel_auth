@@ -33,7 +33,9 @@ RSpec.configure do |c|
     class User < Sequel::Model
       plugin :sequel_auth
     end
-   
+    
+    class User2 < Sequel::Model(:users)
+    end
   end
   
 end
